@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Aventura del Teclado 🎮 | Juego Educativo para Niños</title>
+  <meta name="description" content="Juego interactivo educativo para niños de primaria para aprender a usar el teclado del computador con diversión y retos progresivos.">
+  <link rel="stylesheet" href="style.css">
+  <!-- Fuentes amigables y legibles para niños -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Contenedor Principal del Juego -->
+  <div id="game-app" class="game-container">
+    
+    <!-- Barra Superior: Vidas, Nivel, Puntos, Racha y Controles -->
+    <header class="game-header">
+      <div class="header-left">
+        <div class="stat-badge lives-badge" title="Vidas restantes">
+          <span class="stat-icon">❤️</span>
+          <span id="lives-display" class="lives-icons" aria-label="3 vidas">❤️❤️❤️</span>
+        </div>
+        <div class="stat-badge streak-badge" id="streak-container" title="Racha de aciertos">
+          <span class="stat-icon">🔥</span>
+          <span id="streak-count">0</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="level-indicator-pill" id="level-title-pill">
+          <span id="level-tag-icon">🔎</span>
+          <span id="level-tag-text">Nivel 1: Conoce el teclado</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="stat-badge score-badge" title="Puntos ganados">
+          <span class="stat-icon">⭐</span>
+          <span id="score-display">0</span> pts
+        </div>
+        <button id="sound-toggle-btn" class="header-action-btn" aria-label="Activar o desactivar sonido" title="Sonido ON/OFF">
+          🔊 <span id="sound-state-text">ON</span>
+        </button>
+        <button id="teacher-btn" class="header-action-btn teacher-btn" aria-label="Abrir modo docente" title="Panel para Docentes">
+          👩‍🏫 <span class="hide-mobile">Docente</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Barra de Progreso del Nivel -->
+    <div class="progress-bar-wrapper">
+      <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
+      <span class="progress-text" id="progress-text">Ronda 1 de 8</span>
+    </div>
+
+    <!-- Escenario Principal Interactivo -->
+    <main class="game-main-stage">
+      
+      <!-- Mascota Interactiva y Guía: Teclín -->
+      <section class="mascot-bar">
+        <div class="mascot-avatar" id="mascot-avatar" aria-hidden="true">🤖</div>
+        <div class="speech-bubble" id="speech-bubble" role="status" aria-live="polite">
+          <p id="instruction-text">¡Hola, explorador! Te doy la bienvenida a <strong>La Aventura del Teclado</strong>.</p>
+        </div>
+      </section>
+
+      <!-- ÁREA DE JUEGO DINÁMICA (Cambia según el Nivel) -->
+      <section class="stage-playfield" id="stage-playfield">
+        
+        <!-- PANTALLA DE BIENVENIDA / INICIO -->
+        <div id="screen-welcome" class="screen-view active">
+          <div class="welcome-card">
+            <h1 class="game-title">⌨️ La Aventura del Teclado 🚀</h1>
+            <p class="welcome-desc">
+              ¡Aprende a escribir en el computador como un verdadero campeón! Encuentra letras, supera desafíos y conviértete en un <strong>Explorador del Teclado</strong>.
+            </p>
+            <div class="welcome-levels-preview">
+              <div class="preview-item"><span>🔎</span> 1. Conoce las teclas</div>
+              <div class="preview-item"><span>🐭</span> 2. Atrapa la letra</div>
+              <div class="preview-item"><span>✏️</span> 3. Escribe palabras</div>
+              <div class="preview-item"><span>🏆</span> 4. La gran misión</div>
+            </div>
+            <button id="start-game-btn" class="big-action-btn pulse-glow">
+              🚀 ¡EMPEZAR A JUGAR!
+            </button>
+          </div>
+        </div>
+
+        <!-- NIVEL 1: Conoce el teclado -->
+        <div id="screen-level-1" class="screen-view">
+          <div class="target-card">
+            <div class="target-subtext">Busca y presiona en tu teclado físico o virtual:</div>
+            <div class="target-letter-display bounce-animation" id="l1-target-letter">A</div>
+            <div class="hint-pill" id="l1-hint-pill">💡 Pista: Está en la fila central de letras</div>
+          </div>
+        </div>
+
+        <!-- NIVEL 2: Atrapa la letra -->
+        <div id="screen-level-2" class="screen-view">
+          <div class="level-sub-header">
+            <div class="prompt-text">🎯 ¡Encuentra y presiona la letra: <span class="highlight-target" id="l2-target-name">M</span>!</div>
+            <div class="difficulty-tag" id="l2-difficulty-tag">Modo: Fácil (3 opciones)</div>
+          </div>
+          <div class="bubble-letters-container" id="l2-bubbles-container">
+            <!-- Letras flotantes generadas dinámicamente -->
+          </div>
+        </div>
+
+        <!-- NIVEL 3: Escribe la palabra -->
+        <div id="screen-level-3" class="screen-view">
+          <div class="word-card">
+            <div class="word-illustration-box">
+              <span class="word-emoji" id="l3-word-emoji">🐱</span>
+            </div>
+            <div class="word-interactive-display" id="l3-word-tiles-container">
+              <!-- Letras de la palabra en cajitas -->
+            </div>
+            <div class="next-key-guidance" id="l3-next-guidance">
+              👉 Siguiente letra: <span class="next-key-tag" id="l3-next-key-tag">G</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NIVEL 4: La gran misión (Frases) -->
+        <div id="screen-level-4" class="screen-view">
+          <div class="phrase-card">
+            <div class="mission-header">
+              <span class="mission-badge">🏅 Desafío Maestro</span>
+              <p class="mission-hint">Escribe la frase completa usando letras y la barra de espacio:</p>
+            </div>
+            <div class="phrase-interactive-display" id="l4-phrase-container">
+              <!-- Letras y espacios de la frase -->
+            </div>
+            <div class="phrase-keyboard-helper" id="l4-key-helper">
+              👉 Siguiente tecla: <span class="next-key-tag" id="l4-next-key-tag">M</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANTALLA: REINTENTO POR CORAZONES AGOTADOS -->
+        <div id="screen-game-over" class="screen-view">
+          <div class="gameover-card">
+            <div class="sad-icon">🌱</div>
+            <h2>¡No te preocupes! 🌟</h2>
+            <p>Aprender a usar el teclado toma práctica. ¡Cada intento te hace más rápido y hábil!</p>
+            <div class="recovery-box">
+              <p>Te regalamos <strong>3 corazones nuevos</strong> ❤️❤️❤️ para seguir.</p>
+            </div>
+            <button id="retry-level-btn" class="big-action-btn">
+              🔄 Intentar nuevamente
+            </button>
+          </div>
+        </div>
+
+        <!-- PANTALLA: MISIÓN COMPLETADA (FINAL) -->
+        <div id="screen-celebration" class="screen-view">
+          <div class="celebration-card">
+            <div class="trophy-bounce">🏆</div>
+            <h2 class="victory-title">🎉 ¡MISIÓN COMPLETADA! 🎉</h2>
+            <div class="diploma-badge">
+              <div class="diploma-icon">🏅</div>
+              <div class="diploma-text">
+                <h3>EXPLORADOR DEL TECLADO</h3>
+                <p>¡Has demostrado maestría usando todas las teclas del computador!</p>
+              </div>
+            </div>
+
+            <!-- Resumen de puntuaciones -->
+            <div class="final-stats-grid">
+              <div class="final-stat-box">
+                <span class="stat-label">⭐ Puntos Totales</span>
+                <span class="stat-number" id="final-score">0</span>
+              </div>
+              <div class="final-stat-box">
+                <span class="stat-label">🎯 Aciertos</span>
+                <span class="stat-number color-good" id="final-hits">0</span>
+              </div>
+              <div class="final-stat-box">
+                <span class="stat-label">💡 Intentos extra</span>
+                <span class="stat-number color-warn" id="final-misses">0</span>
+              </div>
+              <div class="final-stat-box">
+                <span class="stat-label">⌨️ Palabras & Frases</span>
+                <span class="stat-number" id="final-words">0</span>
+              </div>
+            </div>
+
+            <div class="victory-buttons">
+              <button id="play-again-btn" class="big-action-btn pulse-glow">
+                🔄 Jugar nuevamente
+              </button>
+              <button id="final-teacher-view-btn" class="secondary-action-btn">
+                👩‍🏫 Ver reporte docente
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- MENSAJE FLOTANTE DE RETROALIMENTACIÓN POSITIVA (TOAST) -->
+      <div id="feedback-toast" class="feedback-toast hidden" aria-live="assertive">
+        <span id="feedback-toast-icon">⭐</span>
+        <span id="feedback-toast-text">¡Muy bien!</span>
+      </div>
+
+      <!-- SECCIÓN DEL TECLADO VIRTUAL INFANTIL -->
+      <section class="virtual-keyboard-section" aria-label="Teclado Virtual Interactivo">
+        
+        <div class="keyboard-legend">
+          <div class="legend-item"><span class="legend-color legend-num"></span> Números</div>
+          <div class="legend-item"><span class="legend-color legend-left"></span> Mano Izquierda</div>
+          <div class="legend-item"><span class="legend-color legend-right"></span> Mano Derecha</div>
+          <div class="legend-item"><span class="legend-color legend-special"></span> Teclas Especiales</div>
+        </div>
+
+        <div class="keyboard-container" id="virtual-keyboard">
+          <!-- Fila 1: Números y Backspace -->
+          <div class="keyboard-row" id="kb-row-1">
+            <button class="key-btn key-num" data-key="1">1</button>
+            <button class="key-btn key-num" data-key="2">2</button>
+            <button class="key-btn key-num" data-key="3">3</button>
+            <button class="key-btn key-num" data-key="4">4</button>
+            <button class="key-btn key-num" data-key="5">5</button>
+            <button class="key-btn key-num" data-key="6">6</button>
+            <button class="key-btn key-num" data-key="7">7</button>
+            <button class="key-btn key-num" data-key="8">8</button>
+            <button class="key-btn key-num" data-key="9">9</button>
+            <button class="key-btn key-num" data-key="0">0</button>
+            <button class="key-btn key-special key-backspace" data-key="Backspace" aria-label="Borrar tecla anterior">⌫ Borrar</button>
+          </div>
+
+          <!-- Fila 2: QWERTYUIOP -->
+          <div class="keyboard-row" id="kb-row-2">
+            <button class="key-btn key-left" data-key="Q">Q</button>
+            <button class="key-btn key-left" data-key="W">W</button>
+            <button class="key-btn key-left" data-key="E">E</button>
+            <button class="key-btn key-left" data-key="R">R</button>
+            <button class="key-btn key-left" data-key="T">T</button>
+            <button class="key-btn key-right" data-key="Y">Y</button>
+            <button class="key-btn key-right" data-key="U">U</button>
+            <button class="key-btn key-right" data-key="I">I</button>
+            <button class="key-btn key-right" data-key="O">O</button>
+            <button class="key-btn key-right" data-key="P">P</button>
+          </div>
+
+          <!-- Fila 3: ASDFGHJKLÑ + Enter -->
+          <div class="keyboard-row" id="kb-row-3">
+            <button class="key-btn key-left" data-key="A">A</button>
+            <button class="key-btn key-left" data-key="S">S</button>
+            <button class="key-btn key-left" data-key="D">D</button>
+            <button class="key-btn key-left" data-key="F">F</button>
+            <button class="key-btn key-left" data-key="G">G</button>
+            <button class="key-btn key-right" data-key="H">H</button>
+            <button class="key-btn key-right" data-key="J">J</button>
+            <button class="key-btn key-right" data-key="K">K</button>
+            <button class="key-btn key-right" data-key="L">L</button>
+            <button class="key-btn key-right" data-key="Ñ">Ñ</button>
+            <button class="key-btn key-special key-enter" data-key="Enter" aria-label="Enter confirmar">↵ Enter</button>
+          </div>
+
+          <!-- Fila 4: Shift + ZXCVBNM + Shift -->
+          <div class="keyboard-row" id="kb-row-4">
+            <button class="key-btn key-special key-shift" data-key="Shift" aria-label="Tecla Shift Mayúsculas">⇧ Shift</button>
+            <button class="key-btn key-left" data-key="Z">Z</button>
+            <button class="key-btn key-left" data-key="X">X</button>
+            <button class="key-btn key-left" data-key="C">C</button>
+            <button class="key-btn key-left" data-key="V">V</button>
+            <button class="key-btn key-left" data-key="B">B</button>
+            <button class="key-btn key-right" data-key="N">N</button>
+            <button class="key-btn key-right" data-key="M">M</button>
+            <button class="key-btn key-special key-shift" data-key="Shift" aria-label="Tecla Shift Mayúsculas">⇧ Shift</button>
+          </div>
+
+          <!-- Fila 5: Barra Espaciadora -->
+          <div class="keyboard-row" id="kb-row-5">
+            <button class="key-btn key-special key-space" data-key=" " aria-label="Barra espaciadora">
+              ␣ Barra Espaciadora (Espacio)
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL: MODO DOCENTE -->
+    <div id="teacher-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-teacher-title">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h2 id="modal-teacher-title">👩‍🏫 Panel del Docente - Observación y Estadísticas</h2>
+          <button id="close-modal-btn" class="modal-close-btn" aria-label="Cerrar panel docente">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="teacher-intro">
+            Esta información resume el desempeño pedagógico del estudiante durante la sesión actual (sin recopilación externa, 100% privado y offline).
+          </p>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-val" id="metric-hits">0</span>
+              <span class="metric-lbl">Aciertos totales</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-misses">0</span>
+              <span class="metric-lbl">Errores / Reintentos</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-accuracy">100%</span>
+              <span class="metric-lbl">Precisión de pulsación</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-level">Nivel 1</span>
+              <span class="metric-lbl">Nivel alcanzado</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-words">0</span>
+              <span class="metric-lbl">Palabras / Frases hechas</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-time">00:00</span>
+              <span class="metric-lbl">Tiempo de práctica</span>
+            </div>
+          </div>
+
+          <div class="pedagogical-notes">
+            <h3>📌 Sugerencias para el aula:</h3>
+            <ul>
+              <li><strong>Postura:</strong> Asegurar que el estudiante mantenga los codos a 90° y las muñecas relajadas sobre la mesa.</li>
+              <li><strong>Lateralidad:</strong> Guiar al niño a usar los colores del teclado virtual (azul para mano izquierda, morado para mano derecha).</li>
+              <li><strong>Barra espaciadora:</strong> Enseñar el uso de los pulgares para presionar la tecla de espacio.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="modal-print-btn" class="secondary-action-btn">🖨️ Imprimir Reporte</button>
+          <button id="modal-ok-btn" class="big-action-btn">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
